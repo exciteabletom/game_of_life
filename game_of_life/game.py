@@ -32,25 +32,15 @@ class Game:
         for row, index in seed:
             self.grid[row][index].live = True
 
-    def print_grid(self, grid=None):
-        if grid is None:
-            grid = self.grid
-
-        for row in grid:
-            for cell in row:
-                if cell.live:
-                    print("x", end="")
-                else:
-                    print("o", end="")
-
-            print("")
-
     def tick(self):
-        grid_copy = copy.deepcopy(self.grid)
-        for row_num, row in enumerate(grid_copy):
-            for index, cell in enumerate(row):
-                live_neighbours = get_live_neighbour_count(cell, grid_copy)
-                if cell.live and not 2 <= live_neighbours <= 3:
-                    self.grid[row_num][index].live = False
-                elif not cell.live and live_neighbours == 3:
-                    self.grid[row_num][index].live = True
+        cell_neighbours = {}
+        for row in self.grid:
+            for cell in row:
+                live_neighbours = get_live_neighbour_count(cell, self.grid)
+                cell_neighbours.update({cell: live_neighbours})
+
+        for cell, neighbours in cell_neighbours.items():
+            if cell.live and not 2 <= neighbours <= 3:
+                self.grid[cell.row][cell.index].live = False
+            elif not cell.live and neighbours == 3:
+                self.grid[cell.row][cell.index].live = True
